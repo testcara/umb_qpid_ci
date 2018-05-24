@@ -138,6 +138,8 @@ update_umb_setting() {
 		remove_redundant_end ${handler_file}
 		update_service_name ${handler_file}
 	done
+	echo "=====Add sleep to the process of sending message====="
+	sed -i "/msg.body = content/a \      sleep 5"  ${umb_handler_file}
 }
 
 while getopts "q:u:hr" opt; do  
