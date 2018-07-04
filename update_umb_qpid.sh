@@ -13,7 +13,10 @@ qpid_handler_file='/var/www/errata_rails/lib/message_bus/qpid_handler.rb'
 umb_original_servers[0]='messaging-devops-broker01.web.stage.ext.phx2.redhat.com:5671'
 umb_original_servers[1]='messaging-devops-broker01.qe.stage.ext.phx2.redhat.com:5671'
 umb_original_servers[2]='messaging-devops-broker01.web.qa.ext.phx1.redhat.com:5671'
+umb_original_servers[3]='messaging-devops-broker02.web.stage.ext.phx2.redhat.com:5671'
+
 qpid_original_server='qpid.test.engineering.redhat.com'
+cat_client_setting='/var/www/errata_rails/config/initializers/settings.rb'
 
 functions_usage() {
 	echo "Usage:"
@@ -28,6 +31,13 @@ update_service_name() {
 	echo sed -i "s/ErrataSystem::SERVICE_NAME/\"0.0.0.0\"/g" ${umb_handler_file}
 	sed -i "s/ErrataSystem::SERVICE_NAME/\"0.0.0.0\"/g" ${umb_handler_file}
 	echo "=================Update the service hostname to ip: Done================="
+}
+
+update_cat_receiver_setting(){
+	echo "==================Update the cat receiver settings===================="
+	client_random_name=$( date | md5sum| cut -c 1-6 )
+	echo sed -i "s/client-errata.catconsumer/client-errata-${client_random_name}.catconsumer/g"  ${cat_client_setting}
+	sed -i "s/client-errata.catconsumer/client-errata-${client_random_name}.catconsumer/g"  ${cat_client_setting}
 }
 
 check_return_code() {
@@ -113,8 +123,9 @@ update_umb_setting() {
 		backup_file ${umb_files}
 	done
 	echo "=====Update the umb server ip setting======"
-	for umb_original_server in umb_original_servers
+	for umb_original_server in ${umb_original_servers}
 	do
+		echo "=====updating ${umb_original_server} to ${umb_server}"
 		sed -i "s/${umb_original_server}/${umb_server}/g"  ${umb_config_file}
 		sed -i "s/amqps/amqp/g"  ${umb_config_file}
 		sed -i "s/${umb_original_server}/${umb_server}/g"  ${umb_testing_config_file}
@@ -150,7 +161,7 @@ while getopts "q:u:hr" opt; do
 		;;  
     u)
 		echo "======Found parameter u: umb server is $OPTARG=========="
-		umb_server=OPTARG
+		umb_server=$OPTARG
 		;;  
     r)
 		echo "======Found parameter r: would ignore the -p and -u setting============"
@@ -177,6 +188,7 @@ fi
 
 if [[ -n ${umb_server} ]] ; then
 	echo "=====Would update umb related settings========"
+	update_cat_receiver_setting
 	update_umb_setting
 	check_return_code
 	echo "=====Update umb related settings: Done========"
