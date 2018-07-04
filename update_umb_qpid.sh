@@ -125,11 +125,10 @@ update_umb_setting() {
 	echo "=====Update the umb server ip setting======"
 	for umb_original_server in ${umb_original_servers}
 	do
-		echo "${umb_original_server} ${umb_server}" 
+		echo "=====updating ${umb_original_server} to ${umb_server}"
 		sed -i "s/${umb_original_server}/${umb_server}/g"  ${umb_config_file}
 		sed -i "s/amqps/amqp/g"  ${umb_config_file}
 		sed -i "s/${umb_original_server}/${umb_server}/g"  ${umb_testing_config_file}
-		echo sed -i "s/${umb_original_server}/${umb_server}/g"  ${umb_testing_config_file}
 		sed -i "s/amqps/amqp/g"  ${umb_testing_config_file}
 	done
 	echo "=====Disable the CA parts of the umb server setting====="
