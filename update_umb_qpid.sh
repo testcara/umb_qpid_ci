@@ -30,6 +30,8 @@ update_service_name() {
 	echo "==================Update the server hostname to ip====================="
 	echo sed -i "s/ErrataSystem::SERVICE_NAME/\"0.0.0.0\"/g" ${umb_handler_file}
 	sed -i "s/ErrataSystem::SERVICE_NAME/\"0.0.0.0\"/g" ${umb_handler_file}
+	echo sed -i "s/ErrataSystem::SERVICE_NAME/\"0.0.0.0\"/g" ${umb_testing_handler_file}
+	sed -i "s/ErrataSystem::SERVICE_NAME/\"0.0.0.0\"/g" ${umb_testing_handler_file}
 	echo "=================Update the service hostname to ip: Done================="
 }
 
